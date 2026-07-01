@@ -41,3 +41,11 @@ void trim(char *s){
         len--;
     }
 }
+
+char* skipSpaces(char *s){
+    while (*s == ' ') {
+        s++;
+    }
+    return s;
+}
+
