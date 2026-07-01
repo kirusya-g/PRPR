@@ -49,3 +49,29 @@ char* skipSpaces(char *s){
     return s;
 }
 
+int openFiles(FILE **fS, FILE **fH, FILE **fR){
+    FILE *s;
+    FILE *h;
+    FILE *r;
+
+    if (*fS != NULL && *fH != NULL && *fR != NULL) {
+        return 1;
+    }
+
+    s = fopen("Sudoku.txt", "r");
+    h = fopen("RegisterHracov.txt", "r");
+    r = fopen("RegisterRieseni.txt", "r");
+
+    if (s == NULL || h == NULL || r == NULL) {
+        if (s) fclose(s);
+        if (h) fclose(h);
+        if (r) fclose(r);
+        return 0;
+    }
+
+    *fS = s;
+    *fH = h;
+    *fR = r;    
+    return 1;
+}
+
