@@ -32,3 +32,12 @@ char* getField(const char *line,  int index){
     }
     return NULL;
 }
+
+void trim(char *s){
+    int len;
+    len = (int)strlen(s);
+    while (len > 0 && (s[len-1] == '\n' || s[len-1] == '\r')){
+        s[len-1] = '\0';
+        len--;
+    }
+}
