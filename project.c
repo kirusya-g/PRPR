@@ -154,3 +154,14 @@ void doV(FILE **fS, FILE **fH, FILE **fR, int volba, int polNaplnene, int lzNapl
     }
 }
 
+int correctSID(const char *sid) {
+    int i;
+    if (strlen(sid) != 8) return 0;
+    if (strncmp(sid, "SID", 3) != 0) return 0;
+    if (sid[3] < 'A' || sid[3] > 'Z') return 0;
+    for (i = 4; i < 8; i++) {
+        if (sid[i] < '0' || sid[i] > '9') return 0;
+    }
+    return 1;
+}
+
