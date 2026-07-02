@@ -116,7 +116,7 @@ void v1(FILE *fH, FILE *fR) {
         rewind(fR);
         count = 0;
         while( count < 10 && fgets(lineR, sizeof(lineR), fR)) {
-            srtncpy(copy, lineR, MAX_LINE - 1);
+            strncpy(copy, lineR, MAX_LINE - 1);
             copy[MAX_LINE - 1] = '\0';
             trim(copy);
             if (strlen(copy) == 0) continue;
@@ -213,7 +213,7 @@ void h (FILE **fS, FILE **fH, FILE **fR, const char *sidInput) {
     printf("H: Uspesne vytvoreny subor Vystup_H.txt\n");
 }
 
-int main() {
+int main(void) {
     FILE *fSudoku;
     FILE *fHracov;
     FILE *fRieseni;
@@ -240,9 +240,9 @@ int main() {
             volba  = -1;
             sscanf(cmdLine + 1, "%d", &volba);
             doV(&fSudoku, &fHracov, &fRieseni, volba, polNaplnene, lzNaplnene);
-        } else if (c = 'h') {
+        } else if (c == 'h') {
             if (fgets(sidInput, sizeof(sidInput), stdin)) {
-                doH(&fSudoku, &fHracov, &fRieseni, sidInput);
+                h(&fSudoku, &fHracov, &fRieseni, sidInput);
             }
         } else if (c == 'k') {
             if (fSudoku) fclose(fSudoku);
