@@ -138,3 +138,19 @@ void v1(FILE *fH, FILE *fR) {
     }
 }
 
+void doV(FILE **fS, FILE **fH, FILE **fR, int volba, int polNaplnene, int lzNaplnene) {
+    if (volba == 1) {
+        if(!openFiles(fS, fH, fR)) {
+            printf("V1: Neotvorene txt subory\n");
+            return;
+        }
+        v1(*fH, *fR);
+    } else if (volba == 2) {
+        if (!polNaplnene) {
+            printf("V2: Nenanplnene polia\n");
+        }
+    } else {
+        printf("V: Nespravna volba vypisu\n");
+    }
+}
+
