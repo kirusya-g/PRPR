@@ -165,3 +165,92 @@ int correctSID(const char *sid) {
     return 1;
 }
 
+void h (FILE **fS, FILE **fH, FILE **fR, const char *sidInput) {
+    char sid[MAX_TOKEN];
+    FILE *out;
+    char line[MAX_LINE];
+    char copy[MAX_LINE];
+    char *sidLine;
+    char *sTrim;
+
+    strncpy(sid, sidInput, MAX_TOKEN - 1);
+    sid[MAX_TOKEN - 1] = '\0';
+    trim(sid);
+
+    if (!correctSID(sid)) {
+        printf("H: Nespravny vstup\n");
+        return;
+    }
+
+    if (*fS == NULL || *fH == NULL || *fR == NULL) {
+        printf("H: Neotvorene txt subory\n");
+        return;
+    }
+
+    out = fopen("Vystup_H.txt", "w");
+    if (!out) {
+        printf("H: Neotvoreny subor Vystup_H\n");
+        return;
+    }
+
+    rewind(*fR);
+    while (fgets(line, sizeof(line), *fR)) {
+        strncpy(copy, line, MAX_LINE - 1);
+        copy[MAX_LINE - 1] = '\0';
+        trim(copy);
+        if (strlen(copy) == 0) continue;
+
+        sidLine = getField(copy, 2);
+        if (sidLine) {
+            sTrim = skipSpaces(sidLine);
+            if (strcmp(sTrim, sid) == 0) {
+                fprintf(out, "%s\n", copy);
+        }
+        free(sidLine);
+        }
+    }
+    fclose(out);
+    printf("H: Uspesne vytvoreny subor Vystup_H.txt\n");
+}
+
+int main() {
+    FILE *fSudoku;
+    FILE *fHracov;
+    FILE *fRieseni;
+    int polNaplnene;
+    int lzNaplnene;
+    char cmdLine[MAX_LINE];
+    char c;
+    int volba;
+    char sidInput[MAX_LINE];
+
+    fSudoku = NULL;
+    fHracov = NULL;
+    fRieseni = NULL;
+    polNaplnene = 0;
+    lzNaplnene = 0;
+
+    while (fgets(cmdLine, sizeof(cmdLine), stdin)) {
+        trim(cmdLine);
+        if (strlen(cmdLine) == 0) continue;
+    
+        c = cmdLine[0];
+        
+        if (c == 'v') {
+            volba  = -1;
+            sscanf(cmdLine + 1, "%d", &volba);
+            doV(&fSudoku, &fHracov, &fRieseni, volba, polNaplnene, lzNaplnene);
+        } else if (c = 'h') {
+            if (fgets(sidInput, sizeof(sidInput), stdin)) {
+                doH(&fSudoku, &fHracov, &fRieseni, sidInput);
+            }
+        } else if (c == 'k') {
+            if (fSudoku) fclose(fSudoku);
+            if (fHracov) fclose(fHracov);
+            if (fRieseni) fclose(fRieseni);
+            break;
+        }
+        
+    }
+    return 0;
+}
