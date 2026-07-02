@@ -121,7 +121,7 @@ void v1(FILE *fH, FILE *fR) {
             trim(copy);
             if (strlen(copy) == 0) continue;
 
-            pidR = getField(copy, 0);
+            pidR = getField(copy, 1);
             if (pidR) {
                 pTrim = skipSpaces(pidR);
                 if (pid && strcmp(pTrim, pid) == 0) {
