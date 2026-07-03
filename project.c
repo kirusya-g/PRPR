@@ -63,6 +63,76 @@ char* trimLeadingAndFree(char *s) {
     return res;
 }
 
+char* getFieldTrimmed(const char *line, int index) {
+    char *res;
+    res = getField(line, index);
+    return trimLeadingAndFree(res); 
+}
+
+char* duplicateString(const char *s) {
+    char *res;
+    res = malloc(strlen(s) + 1);
+    strcpy(res, s);
+    return res;
+}
+
+int isValidSID(const char *sid) {
+    int i;
+    if (strlen(sid) != 8) return 0;
+    if (strncmp(sid, "SID", 3) != 0) return 0;
+    if (sid[3] < 'A' || sid[3] > 'Z') return 0;
+    for (i = 4; i < 8; i++) {
+        if (sid[i] < '0' || sid[i] > '9') return 0;
+    }
+    return 1;
+}
+
+int isValidGID(const char *gid) {
+    int i;
+    if (strlen(gid) != 7) return 0;
+    if (strncmp(gid, "GID", 3) != 0) return 0;
+    if (gid[3] < 'A' || gid[3] > 'Z') return 0;
+    for(i = 4; i < 7; i++) {
+        if(gid[i] < '0' || gid[i] > '9') return 0;
+    }
+    return 1;
+}
+
+int isValidPID(const char *pid) {
+    int i;
+    if (strlen(pid) != 6) return 0;
+    if (strncmp(pid, "PID", 3) != 0) return 0;
+    if (!((pid[3] >= 'a' && pid[3] <= 'z') || (pid[3] >= 'A' && pid[3] <= 'Z'))) return 0;
+    for (i = 4; i < 6; i++) {
+        if (pid[i] < '0' || pid[i] > '9') return 0;
+    }
+    return 1;
+}
+
+void freeStringArray(char **arr, int size) {
+    int i;
+    if (arr == NULL) return;
+    for (i = 0; i < size; i++) {
+        if (arr[i] != NULL) free(arr[i]);
+    }
+    free(arr);
+}
+
+int countNonEmptyLines(FILE *f) {
+    char line[MAX_LINE];
+    int count;
+
+    count = 0;
+    rewind(f);
+    while (fgets(line, sizeof(line), f)) {
+        trim(line);
+        if (strlen(line) > 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
 int openFiles(FILE **fS, FILE **fH, FILE **fR){
     FILE *s;
     FILE *h;
