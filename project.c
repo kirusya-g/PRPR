@@ -49,6 +49,20 @@ char* skipSpaces(char *s){
     return s;
 }
 
+char* trimLeadingAndFree(char *s) {
+    char *start;
+    char *res;
+    int len;
+
+    if (s == NULL) return NULL;
+    start = skipSpaces(s);
+    len = (int)strlen(start);
+    res = malloc(len + 1);
+    strcpy(res, start);
+    free(s);
+    return res;
+}
+
 int openFiles(FILE **fS, FILE **fH, FILE **fR){
     FILE *s;
     FILE *h;
