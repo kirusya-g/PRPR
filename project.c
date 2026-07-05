@@ -222,6 +222,32 @@ void v1(FILE *fH, FILE *fR) {
     }
 }
 
+void v2(char **hracPID, char **hracMeno, char **hracKrajina, char **hracRok, int hracCount,
+          char **riesGID, char **riesPID, char **riesSID, char **riesDatum,
+          char **riesMin, char **riesSek, int riesCount) {
+            int i;
+            int j;
+            int count;
+            int sec;
+
+            for(i = 0; i < hracCount; i++) {
+                if (i > 0) printf("\n");
+
+                printf("PID: %s / %s / %s/ \n", hracPID[i], hracRok[i], hracKrajina[i]);
+                printf("Identita:  %s\n", hracMeno[i]);
+                printf("Vysledok: \n");
+
+                count = 0;
+                for(j = 0; j < riesCount && count < 10; j++){
+                    if (strcmp(riesPID[j], hracPID[i]) == 0) {
+                        sec = atoi(riesMin[j]) * 60 + atoi(riesSel[j]);
+                        printf("\t%s / %s / %s / %s / %c / %c / %d\n", riesGID[j], riesPID[j], riesSID[j], riesDatum[j], riesGID[j][3], riesSID[j][3], sec);
+                        count ++;
+                    }
+                }
+            }
+          }
+
 void doV(FILE **fS, FILE **fH, FILE **fR, int volba, int polNaplnene, int lzNaplnene) {
     if (volba == 1) {
         if(!openFiles(fS, fH, fR)) {
