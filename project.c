@@ -240,7 +240,7 @@ void v2(char **hracPID, char **hracMeno, char **hracKrajina, char **hracRok, int
                 count = 0;
                 for(j = 0; j < riesCount && count < 10; j++){
                     if (strcmp(riesPID[j], hracPID[i]) == 0) {
-                        sec = atoi(riesMin[j]) * 60 + atoi(riesSel[j]);
+                        sec = atoi(riesMin[j]) * 60 + atoi(riesSek[j]);
                         printf("\t%s / %s / %s / %s / %c / %c / %d\n", riesGID[j], riesPID[j], riesSID[j], riesDatum[j], riesGID[j][3], riesSID[j][3], sec);
                         count ++;
                     }
@@ -323,6 +323,118 @@ void h (FILE **fS, FILE **fH, FILE **fR, const char *sidInput) {
     printf("H: Uspesne vytvoreny subor Vystup_H.txt\n");
 }
 
+void n(FILE *fS, FILE *fH, FILE *fR, char ***pSudokuSID, char ***pSudokuSol, int *pSudokuCount,
+         char ***pHracPID, char ***pHracMeno, char ***pHracKrajina, char ***pHracRok, int *pHracCount,
+         char ***pRiesGID, char ***pRiesPID, char ***pRiesSID, char ***pRiesDatum,
+         char ***pRiesMin, char ***pRiesSek, int *pRiesCount,
+         int *pPolNaplnene) {
+            char line[MAX_LINE];
+            int count;
+            int i;
+            char **sudokuSID;
+            char **sudokuSol;
+            char **hracPID;
+            char **hracMeno;
+            char **hracKrajina;
+            char **hracRok;
+            char **riesGID;
+            char **riesPID;
+            char **riesSID;
+            char **riesDatum;
+            char **riesMin;
+            char **riesSek;
+
+            if (fS == NULL || fH == NULL || fR == NULL) {
+                printf("N: Neotvorene txt subory\n");
+                return;
+            }
+
+            if (*pPolNaplnene) {
+                freeStringArray(*pSudokuSID, *pSudokuCount);
+                freeStringArray(*pSudokuSol, *pSudokuCount);
+                freeStringArray(*pHracPID, *pHracCount);
+                freeStringArray(*pHracMeno, *pHracCount);
+                freeStringArray(*pHracKrajina, *pHracCount);
+                freeStringArray(*pHracRok, *pHracCount);
+                freeStringArray(*pRiesGID, *pRiesCount);
+                freeStringArray(*pRiesPID, *pRiesCount);
+                freeStringArray(*pRiesSID, *pRiesCount);
+                freeStringArray(*pRiesDatum, *pRiesCount);
+                freeStringArray(*pRiesMin, *pRiesCount);
+                freeStringArray(*pRiesSek, *pRiesCount);
+            }
+
+            count = countNonEmptyLines(fS);
+            sudokuSID = malloc(sizeof(char*) * count);
+            sudokuSol = malloc(sizeof(char*) * count);
+            rewind(fS);
+            i = 0;
+            while (i < count && fgets(line, sizeof(line), fS)) {
+                trim(line);
+                if (strlen(line) == 0) continue;
+                sudokuSID[i] = getField(line, 0);
+                sudokuSol[i] = getField(line, 1);
+                i++;
+            }
+            *pSudokuSID = sudokuSID;
+            *pSudokuSol = sudokuSol;
+            *pSudokuCount = count;
+
+
+            count = countNonEmptyLines(fH);
+            hracPID = malloc(sizeof(char*) * count);
+            hracMeno = malloc(sizeof(char*) * count);
+            hracKrajina = malloc(sizeof(char*) * count);
+            hracRok = malloc(sizeof(char*) * count);
+            rewind(fH);
+            i = 0;
+            while (i < count && fgets(line, sizeof(line), fH)) {
+                trim(line);
+                if (strlen(line) == 0) continue;
+                hracPID[i] = getField(line, 0);
+                hracMeno[i] = getField(line, 1);
+                hracKrajina[i] = getField(line, 2);
+                hracRok[i] = getField(line, 3);
+                i++;
+         }
+        *pHracPID = hracPID;
+        *pHracMeno = hracMeno;
+        *pHracKrajina = hracKrajina;
+        *pHracRok = hracRok;
+        *pHracCount = count;
+
+
+        count = countNonEmptyLines(fR);
+        riesGID = malloc(sizeof(char*) * count);
+        riesPID = malloc(sizeof(char*) * count);
+        riesSID = malloc(sizeof(char*) * count);
+        riesDatum = malloc(sizeof(char*) * count);
+        riesMin = malloc(sizeof(char*) * count);
+        riesSek = malloc(sizeof(char*) * count);
+        rewind(fR);
+        i = 0;
+        while(i < count && fgets(line, sizeof(line), fR)) {
+            trim(line);
+            if (strlen(line) == 0) continue;
+            riesGID[i] = getField(line, 0);
+            riesPID[i] = getField(line, 1);
+            riesSID[i] = getField(line, 2);
+            riesDatum[i] = getField(line, 3);
+            riesMin[i] = getField(line, 4);
+            riesSek[i] = getField(line, 5);
+            i++;
+        }
+        *pRiesGID = riesGID;
+        *pRiesPID = riesPID;
+        *pRiesSID = riesSID;
+        *pRiesDatum = riesDatum;
+        *pRiesMin = riesMin;
+        *pRiesSek = riesSek;
+        *pRiesCount = count;
+        *pPolNaplnene = 1;
+
+
+        }
 int main(void) {
     FILE *fSudoku;
     FILE *fHracov;
