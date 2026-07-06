@@ -432,9 +432,126 @@ void n(FILE *fS, FILE *fH, FILE *fR, char ***pSudokuSID, char ***pSudokuSol, int
         *pRiesSek = riesSek;
         *pRiesCount = count;
         *pPolNaplnene = 1;
-
-
         }
+
+void q(char ***pRiesGID, char ***pRiesPID, char ***pRiesSID,
+         char ***pRiesDatum, char ***pRiesMin, char ***pRiesSek,
+         int *pRiesCount, int polNaplnene){
+            int y;
+            int pos;
+            char bufGID[MAX_TOKEN];
+            char bufPID[MAX_TOKEN];
+            char bufSID[MAX_TOKEN];
+            int datum;
+            int min;
+            int sek;
+            int parsed;
+            char **newGID;
+            char **newSID;
+            char **newPID;
+            char **newDatum;
+            char **newMin;
+            char **newSek;
+            int i;
+            char datumStr[20];
+            char minStr[20];
+            char sekStr[20];
+
+            if (!polNaplnene){
+                printf("Q: Polia nie su vytvorene\n");
+                return;
+            }
+
+            scanf("%d", &y);
+            while(getchar() != '\n') {}
+
+            for(;;){
+                scanf("%99s", bufGID);
+                while(getchar() != '\n') {}
+                if (isValidGID(bufGID)) break;
+                printf("Q: nespravny format vstupu, zadaj znova: ");
+            }
+
+            for(;;){
+                scanf("%99s", bufPID);
+                while(getchar() != '\n') {}
+                if (isValidPID(bufPID)) break;
+                printf("Q: nespravny format vstupu, zadaj znova: ");
+            }
+
+            for(;;){
+                scanf("%99s", bufSID);
+                while(getchar() != '\n') {}
+                if (isValidSID(bufSID)) break;
+                printf("Q: nespravny format vstupu, zadaj znova: ");
+            }
+
+            for (;;) {
+                parsed = scanf("%d %d %d", &datum, &min, &sek);
+                while (getchar() != '\n') {}
+                if (parsed == 3) break;
+                printf("Q: nespravny format vstupu, zadaj znova:");
+            }
+
+            sprintf(datumStr, "%d", datum);
+            sprintf(minStr, "%d", min);
+            sprintf(sekStr, "%d", sek);
+
+            pos  = y - 1;
+            if (pos < 0) pos = 0;
+            if (pos > *pRiesCount) pos = *pRiesCount;
+
+            newGID = malloc(sizeof(char*) * (*pRiesCount + 1));
+            newPID = malloc(sizeof(char*) * (*pRiesCount + 1));
+            newSID = malloc(sizeof(char*) * (*pRiesCount + 1));
+            newDatum = malloc(sizeof(char*) * (*pRiesCount + 1));
+            newMin = malloc(sizeof(char*) * (*pRiesCount + 1));
+            newSek = malloc(sizeof(char*) * (*pRiesCount + 1));
+
+            for (i = 0; i < pos; i++) {
+                newGID[i] = (*pRiesGID)[i];
+                newPID[i] = (*pRiesPID)[i];
+                newSID[i] = (*pRiesSID)[i];
+                newDatum[i] = (*pRiesDatum)[i];
+                newMin[i] = (*pRiesMin)[i];
+                newSek[i] = (*pRiesSek)[i];
+            }
+
+            newGID[pos] = duplicateString(bufGID);
+            newPID[pos] = duplicateString(bufPID);
+            newSID[pos] = duplicateString(bufSID);
+            newDatum[pos] = duplicateString(datumStr);
+            newMin[pos] = duplicateString(minStr);
+            newSek[pos] = duplicateString(sekStr);
+
+            for (i = pos; i < *pRiesCount; i++) {
+                newGID[i+1] = (*pRiesGID)[i];
+                newPID[i+1] = (*pRiesPID)[i];
+                newSID[i+1] = (*pRiesSID)[i];
+                newDatum[i+1] = (*pRiesDatum)[i];
+                newMin[i+1] = (*pRiesMin)[i];
+                newSek[i+1] = (*pRiesSek)[i];
+            }
+
+            free(*pRiesGID);
+            free(*pRiesPID);
+            free(*pRiesSID);
+            free(*pRiesDatum);
+            free(*pRiesMin);
+            free(*pRiesSek);
+
+            *pRiesGID = newGID;
+            *pRiesPID = newPID;
+            *pRiesSID = newSID;
+            *pRiesDatum = newDatum;
+            *pRiesMin = newMin;
+            *pRiesSek = newSek;
+            (*pRiesCount)++;
+
+}
+
+
+
 int main(void) {
     FILE *fSudoku;
     FILE *fHracov;
