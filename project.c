@@ -640,6 +640,27 @@ void w(char ***pRiesGID, char ***pRiesPID, char ***pRiesSID,
             printf("W: Vymazalo sa : %d zaznamov.\n", deleted);
          }
 
+void solutionToGrid(const char *sol, char grid[9][9]){
+    int quadRow;
+    int quadCol;
+    int r;
+    int c;
+    int quadIndex;
+    int base;
+
+    for (quadRow = 0; quadRow < 3; quadRow++){
+        for (quadCol = 0; quadCol < 3; quadCol++) {
+            quadIndex = quadRow * 3 + quadCol;
+            base = quadIndex * 9;
+            for (r = 0; r < 3; r++) {
+                for (c = 0; c < 3; c++) {
+                    grid[quadRow * 3 + r][quadCol * 3 + c] = sol[base + r * 3 + c];
+                }
+            }
+        }
+    }
+}
+
 
 
 int main(void) {
