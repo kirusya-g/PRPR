@@ -550,6 +550,96 @@ void q(char ***pRiesGID, char ***pRiesPID, char ***pRiesSID,
 
 }
 
+void w(char ***pRiesGID, char ***pRiesPID, char ***pRiesSID,
+         char ***pRiesDatum, char ***pRiesMin, char ***pRiesSek,
+         int *pRiesCount, int polNaplnene){
+            char pidInput[MAX_TOKEN];
+            int i;
+            int newCount;
+            int deleted;
+            char **newGID;
+            char **newPID;
+            char **newSID;
+            char **newDatum;
+            char **newMin;
+            char **newSek;
+
+            if (!polNaplnene){
+                printf("W: POlia nie su vytvorene.\n");
+                return;
+            }
+
+            scanf("%99s", pidInput);
+            while (getchar() != '\n'){}
+
+            if (*pRiesCount == 0){
+                printf("W: Vymazalo sa : 0 zaznamov!\n");
+                return;
+            }
+
+            newGID = malloc(sizeof(char*) * (*pRiesCount));
+            newPID = malloc(sizeof(char*) * (*pRiesCount));
+            newSID = malloc(sizeof(char*) * (*pRiesCount));
+            newDatum = malloc(sizeof(char*) * (*pRiesCount));
+            newSek = malloc(sizeof(char*) * (*pRiesCount));
+            newMin = malloc(sizeof(char*) * (*pRiesCount));
+
+            newCount = 0;
+            deleted = 0;
+
+            for (i = 0; i < *pRiesCount; i++){
+                if (strcmp((*pRiesPID)[i],pidInput) == 0){
+                    free((*pRiesGID)[i]);
+                    free((*pRiesPID)[i]);
+                    free((*pRiesSID)[i]);
+                    free((*pRiesDatum)[i]);
+                    free((*pRiesMin)[i]);
+                    free((*pRiesSek)[i]);
+                    deleted++;
+                } else {
+                    newGID[newCount] = (*pRiesGID)[i];
+                    newPID[newCount] = (*pRiesPID)[i];
+                    newSID[newCount] = (*pRiesSID)[i];
+                    newDatum[newCount] = (*pRiesDatum)[i];
+                    newMin[newCount] = (*pRiesMin)[i];
+                    newSek[newCount] = (*pRiesSek)[i];
+                    newCount++;
+                }
+            }
+
+            free(*pRiesGID);
+            free(*pRiesPID);
+            free(*pRiesSID);
+            free(*pRiesDatum);
+            free(*pRiesMin);
+            free(*pRiesSek);
+
+            if (newCount == 0) {
+                free(newGID);
+                free(newPID);
+                free(newSID);
+                free(newDatum);
+                free(newMin);
+                free(newSek);
+                *pRiesGID = NULL;
+                *pRiesPID = NULL;
+                *pRiesSID = NULL;
+                *pRiesDatum = NULL;
+                *pRiesMin = NULL;
+                *pRiesSek = NULL;
+            } else {
+                *pRiesGID = newGID;
+                *pRiesPID = newPID;
+                *pRiesSID = newSID;
+                *pRiesDatum = newDatum;
+                *pRiesMin = newMin;
+                *pRiesSek = newSek;
+            }
+            *pRiesCount = newCount;
+
+            printf("W: Vymazalo sa : %d zaznamov.\n", deleted);
+         }
+
 
 
 int main(void) {
