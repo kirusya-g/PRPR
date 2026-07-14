@@ -661,6 +661,92 @@ void solutionToGrid(const char *sol, char grid[9][9]){
     }
 }
 
+void e(char **sudokuSID, char **sudokuSol, int sudokuCount, int polNaplnene){
+    char sidInput[MAX_TOKEN];
+    int x;
+    int parsed;
+    int idx;
+    int i;
+    int j;
+    int k;
+    char grid[9][9];
+    FILE *out;
+    int removedPositions[9];
+    int removedCount;
+    int pos;
+    int already;
+
+    parsed = scanf("%99s %d", sidInput, &x);
+    while (getchar() != '\n'){ }
+
+    if (parsed != 2 || !isValid(sidInput) || x < 1 || x > 5) {
+        printf("E: Nespravny vstup.\n");
+        return;
+    }
+
+    if (!polNaplnene) {
+        printf("E: Polia nie su vytvorene.\n");
+        return;
+    }
+
+    idx = -1;
+    for (i = 0; i < sudokuCount; i++){
+        if (strcmp(sudokuSID[i], sidInput) == 0){
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx == -1){
+        printf ("E: Nespravny vstup.\n");
+        return;
+    }
+
+    solutionToGrid(sudokuSol[idx], grid);
+
+    out = fopen("Vystup_E.txt", "w");
+    if (!out) {
+        printf("E: Nespravny vstup.\n");
+        return;
+    }
+
+    for (i = 0; i < 9; i++){
+        removedCount = 0;
+        while (removedCount < x) {
+            pos = rand() % 9;
+            already = 0;
+            for (k = 0; k < removedCount; k++){
+                if (removedPositions[k] == pos) {
+                    already = 1;
+                    break;
+                }
+            }
+            if (!already){
+                removedPositions[removedCount] = pos;
+                removedCount++;
+            }
+        }
+
+        fprintf(out, "|");
+        for (j = 0; j < 9; j++){
+            already = 0;
+            for (k = 0; k < removedCount; k++){
+                if (removedPositions[k] == j){
+                    already = 1;
+                    break;
+                }
+            }
+            if (already){
+                fprintf(out, " |");
+            } else {
+                fprintf(out, "%c|", grid[i][j]);
+            }
+        }
+        fprintf(out, "\n");
+    }
+    fclose(out);
+}
+
 
 
 int main(void) {
