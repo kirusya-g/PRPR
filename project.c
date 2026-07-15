@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_LINE 600
 #define MAX_TOKEN 100
@@ -738,7 +739,7 @@ void e(char **sudokuSID, char **sudokuSol, int sudokuCount, int polNaplnene){
     parsed = scanf("%99s %d", sidInput, &x);
     while (getchar() != '\n'){ }
 
-    if (parsed != 2 || !isValid(sidInput) || x < 1 || x > 5) {
+    if (parsed != 2 || !isValidSID(sidInput) || x < 1 || x > 5) {
         printf("E: Nespravny vstup.\n");
         return;
     }
@@ -835,7 +836,7 @@ void freeZoznam(Hrac *h){
     }
 }
 
-void m(FILE *fH, FILE *fR, Hrac **pZoznam, int *pZoznamNaplneny){
+int m(FILE *fH, FILE *fR, Hrac **pZoznam, int *pZoznamNaplneny){
     char lineH[MAX_LINE];
     char lineR[MAX_LINE];
     Hrac *head;
@@ -1028,6 +1029,45 @@ void a(Hrac **pZoznam, int *pZoznamNaplneny){
     printf("A: Uspesne pridany zaznam na poziciu %d.\n", pos);
 }
 
+void s(Hrac *zoznam, int zoznamNaplneny, const char *gid){
+    Hrac *h;
+    Vysledok *cur;
+    Vysledok *prev;
+    Vysledok *toDelete;
+    int deleted;
+
+    if (!zoznamNaplneny){
+        printf("S: Spajany zoznam nie je vytvorene.\n");
+        return;
+    }
+    deleted = 0;
+    h = zoznam;
+
+    while (h != NULL) {
+        cur = h->vysledky;
+        prev = NULL;
+        while(cur != NULL) {
+            if (strcmp(cur->GID, gid) == 0){
+                toDelete = cur;
+                if (prev == NULL){
+                    h->vysledky = cur->next;
+                    cur = h->vysledky;
+                } else {
+                    prev->next = cur->next;
+                    cur = prev->next;
+                }
+                free(toDelete);
+                deleted++;
+            } else {
+                prev = cur;
+                cur = cur->next;
+            }
+        }
+        h = h->next;
+    }
+    printf("S: Vymazalo sa : %d zaznamov!\n", deleted);
+}
+
 void swapResultData(Vysledok *a, Vysledok *b){
     char tmpSID[10];
     char tmpGID[10];
@@ -1078,6 +1118,8 @@ int main(void) {
     char c;
     int volba;
     char sidInput[MAX_LINE];
+    char gidInput[MAX_TOKEN];
+    int naplneneZaznamov;
 
     char **sudokuSID;
     char **sudokuSol;
@@ -1096,6 +1138,9 @@ int main(void) {
     char **riesMin;
     char **riesSek;
     int riesCount;
+
+    Hrac *zoznam;
+    int zoznamNaplneny;
 
     fSudoku = NULL;
     fHracov = NULL;
@@ -1119,6 +1164,9 @@ int main(void) {
     riesMin = NULL;
     riesSek = NULL;
     riesCount = 0;
+
+    zoznam = 0;
+    zoznamNaplneny = 0;
 
     srand((unsigned int)time(NULL));
 
@@ -1148,7 +1196,23 @@ int main(void) {
             w(&riesGID, &riesPID, &riesSID, &riesDatum, &riesMin, &riesSek, &riesCount, polNaplnene);
         } else if (c == 'e'){
             e(sudokuSID, sudokuSol, sudokuCount, polNaplnene);
-        }else if (c == 'k') {
+        }else if(c == 'm'){
+            if (fHracov == NULL || fRieseni == NULL){
+                printf("M: Neotvoreny subor.\n");
+            } else {
+                naplneneZaznamov = m(fHracov, fRieseni, &zoznam, &zoznamNaplneny);
+                printf("M: Nacitalo sa %d zaznamov.\n", naplneneZaznamov);
+            }
+        } else if (c == 'a') {
+            a(&zoznam, &zoznamNaplneny);
+        } else if (c == 's'){
+            if (fgets(gidInput, sizeof(gidInput), stdin)){
+                trim(gidInput);
+                s(zoznam, zoznamNaplneny, gidInput);
+            }
+        } else if (c == 'd'){
+            d(zoznam);
+        } else if (c == 'k') {
             if (fSudoku) fclose(fSudoku);
             if (fHracov) fclose(fHracov);
             if (fRieseni) fclose(fRieseni);
