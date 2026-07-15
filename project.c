@@ -1028,6 +1028,45 @@ void a(Hrac **pZoznam, int *pZoznamNaplneny){
     printf("A: Uspesne pridany zaznam na poziciu %d.\n", pos);
 }
 
+void swapResultData(Vysledok *a, Vysledok *b){
+    char tmpSID[10];
+    char tmpGID[10];
+    char tmpDat[12];
+    char tmpNarHry;
+    char tmpNarSut;
+    int tmpTrv;
+
+    strcpy(tmpSID, a->SID); strcpy(a->SID, b->SID); strcpy(b->SID, tmpSID);
+    strcpy(tmpGID, a->GID); strcpy(a->GID, b->GID); strcpy(b->GID, tmpGID);
+    strcpy(tmpDat, a->DatHry); strcpy(a->DatHry, b->DatHry); strcpy(b->DatHry, tmpDat);
+
+    tmpNarHry = a->NarHry; a->NarHry = b->NarHry; b->NarHry = tmpNarHry;
+    tmpNarSut = a->NarSut; a->NarSut = b->NarSut; b->NarSut = tmpNarSut;
+    tmpTrv = a->Trvanie; a->Trvanie = b->Trvanie; b->Trvanie = tmpTrv;
+}
+
+void d(Hrac *zoznam){
+    Hrac *h;
+    Vysledok *a;
+    int swapped;
+
+    h = zoznam;
+    while(h != NULL) {
+        do {
+            swapped = 0;
+            a = h->vysledky;
+            while(a != NULL && a->next != NULL){
+                if (a->Trvanie > a->next->Trvanie){
+                    swapResultData(a, a->next);
+                    swapped = 1;
+                }
+                a = a->next;
+            }
+        } while (swapped);
+        h = h->next;
+    }
+}
+
 
 int main(void) {
     FILE *fSudoku;
