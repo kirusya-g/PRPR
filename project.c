@@ -5,6 +5,25 @@
 #define MAX_LINE 600
 #define MAX_TOKEN 100
 
+typedef struct Vysledok {
+    char SID[10];
+    char NarHry;
+    char GID[10];
+    char NarSut;
+    char DatHry[12];
+    int Trvanie;
+    struct Vysledok *next;
+} Vysledok;
+
+typedef struct Hrac {
+    char PID[10];
+    char Identita[100];
+    char Krajina[100];
+    int RokNar;
+    Vysledok *vysledky;
+    struct Hrac *next;
+} Hrac;
+
 char* getField(const char *line,  int index){
     int curr;
     const char *start;
@@ -247,6 +266,46 @@ void v2(char **hracPID, char **hracMeno, char **hracKrajina, char **hracRok, int
                 }
             }
           }
+
+void v3(Hrac *zoznam){
+    Hrac *h;
+    Vysledok *v;
+    int first;
+
+    first = 1;
+    h = zoznam;
+
+    while (h != NULL){
+        if (!first)
+            printf("\n");
+        first = 0;
+
+        printf("PID: %s\n", h ->PID);
+        printf("Identita: %s\n", h->Identita);
+        printf("Krajina: %s\n", h->Krajina);
+        if (h->RokNar != 0){
+            printf("RokNar: %d\n", h->RokNar);
+        } else {
+            printf("RokNar: \n");
+        }
+
+        v = h->vysledky;
+        if(v == NULL){
+            printf("Vysledky: \n");
+        } else {
+            printf("Vysledky: %s / %c / %s / %c / %s / %d\n",
+                    v->SID, v->NarHry, v->GID, v->NarSut, v->DatHry, v->Trvanie);
+                v = v->next;
+                while (v != NULL){
+                    printf("%s / %c / %s / %c / %s / %d\n",
+                    v->SID, v->NarHry, v->GID, v->NarSut, v->DatHry, v->Trvanie);
+                v = v->next;
+                }
+        }
+        h = h->next;
+    }
+
+}
 
 void doV(FILE **fS, FILE **fH, FILE **fR, int volba, int polNaplnene, int lzNaplnene) {
     if (volba == 1) {
