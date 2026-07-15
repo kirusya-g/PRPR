@@ -806,6 +806,153 @@ void e(char **sudokuSID, char **sudokuSol, int sudokuCount, int polNaplnene){
     fclose(out);
 }
 
+Hrac* findPlayer(Hrac *zoznam, const char *pid){
+    Hrac *cur;
+    cur = zoznam;
+    while (cur != NULL) {
+        if (strcmp(cur->PID, pid) == 0) return cur;
+        cur = cur->next;
+    }
+    return NULL;
+}
+
+void freeVysledky(Vysledok *v){
+    Vysledok *tmp;
+    while (v != NULL){
+        tmp = v;
+        v = v->next;
+        free(tmp);
+    }
+}
+
+void freeZoznam(Hrac *h){
+    Hrac *tmp;
+    while (h != NULL){
+        freeVysledky(h->vysledky);
+        tmp = h;
+        h = h->next;
+        free(tmp);
+    }
+}
+
+void m(FILE *fH, FILE *fR, Hrac **pZoznam, int *pZoznamNaplneny){
+    char lineH[MAX_LINE];
+    char lineR[MAX_LINE];
+    Hrac *head;
+    Hrac *tail;
+    Hrac *newNode;
+    Hrac *found;
+    Vysledok *newVys;
+    Vysledok *vTail;
+    char *pid;
+    char *meno;
+    char *krajina;
+    char *rok;
+    char *gid;
+    char *pidR;
+    char *sid;
+    char *datum;
+    char *minS;
+    char *sekS;
+    int hracCount;
+    int riesCount;
+
+    head = NULL;
+    tail = NULL;
+    hracCount = 0;
+    riesCount = 0;
+
+    if(*pZoznamNaplneny){
+        freeZoznam(*pZoznam);
+        *pZoznam = NULL;
+        *pZoznamNaplneny = 0;
+    }
+
+    rewind(fH);
+    while (fgets(lineH, sizeof(lineH), fH)) {
+        trim(lineH);
+        if (strlen(lineH) == 0) continue;
+
+        pid = getField(lineH, 0);
+        meno = getField(lineH, 1);
+        krajina = getField(lineH, 2);
+        rok = getField (lineH, 3);
+
+        newNode = malloc(sizeof(Hrac));
+        strncpy(newNode->PID, pid, sizeof(newNode->PID) - 1);
+        newNode->PID[sizeof(newNode->PID) - 1] = '\0';
+        strncpy(newNode->Identita, meno ? meno : "", sizeof(newNode->Identita) - 1);
+        newNode->Identita[sizeof(newNode->Identita) - 1] = '\0';
+        strncpy(newNode->Krajina, krajina ? krajina : "", sizeof(newNode->Krajina) - 1);
+        newNode->Krajina[sizeof(newNode->Krajina) - 1] = '\0';
+        newNode->RokNar = rok ? atoi(rok) : 0;
+        newNode->vysledky = NULL;
+        newNode->next = NULL;
+
+        if (head == NULL){
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        hracCount++;
+
+        if (pid) free(pid);
+        if (meno) free(meno);
+        if (krajina) free(krajina);
+        if (rok) free(rok);
+    }
+
+    rewind(fR);
+    while (fgets(lineR, sizeof(lineR), fR)){
+        trim(lineR);
+        if (strlen(lineR) == 0) continue;
+
+        gid = getField(lineR, 0);
+        pidR = getFieldTrimmed(lineR, 1);
+        sid = getFieldTrimmed(lineR, 2);
+        datum = getField(lineR, 3);
+        minS = getField(lineR, 4);
+        sekS = getField(lineR, 5);
+
+        found = findPlayer(head, pidR);
+        if (found != NULL && gid != NULL && sid != NULL){
+            newVys = malloc(sizeof(Vysledok));
+            strncpy(newVys->SID, sid, sizeof(newVys->SID) - 1);
+            newVys->SID[sizeof(newVys->SID) - 1] = '\0';
+            newVys->NarHry = sid[3];
+            strncpy(newVys->GID, gid, sizeof(newVys->GID) - 1);
+            newVys->GID[sizeof(newVys->GID) - 1] = '\0';
+            newVys->NarSut = gid[3];
+            strncpy(newVys->DatHry, datum ? datum : "", sizeof(newVys->DatHry) - 1);
+            newVys->DatHry[sizeof(newVys->DatHry) - 1] = '\0';
+            newVys->Trvanie = (minS ? atoi(minS) : 0) * 60 + (sekS ? atoi(sekS) : 0);
+            newVys->next = NULL;
+
+            if (found->vysledky == NULL) {
+                found->vysledky = newVys;
+            } else {
+                vTail = found->vysledky;
+                while (vTail->next != NULL) vTail = vTail->next;
+                vTail->next = newVys;
+            }
+            riesCount++;
+        }
+        if (gid) free(gid);
+        if (pidR) free(pidR);
+        if (sid) free(sid);
+        if (datum) free(datum);
+        if (minS) free(minS);
+        if (sekS) free(sekS);
+    }
+
+    *pZoznam = head;
+    *pZoznamNaplneny = 1;
+
+    return hracCount + riesCount;
+}
+
 
 
 int main(void) {
