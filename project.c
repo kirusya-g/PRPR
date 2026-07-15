@@ -760,11 +760,48 @@ int main(void) {
     int volba;
     char sidInput[MAX_LINE];
 
+    char **sudokuSID;
+    char **sudokuSol;
+    int sudokuCount;
+
+    char **hracPID;
+    char **hracMeno;
+    char **hracKrajina;
+    char **hracRok;
+    int hracCount;
+
+    char **riesGID;
+    char **riesPID;
+    char **riesSID;
+    char **riesDatum;
+    char **riesMin;
+    char **riesSek;
+    int riesCount;
+
     fSudoku = NULL;
     fHracov = NULL;
     fRieseni = NULL;
     polNaplnene = 0;
-    lzNaplnene = 0;
+    
+    sudokuSID = NULL;
+    sudokuSol = NULL;
+    sudokuCount = 0;
+
+    hracPID = NULL;
+    hracMeno = NULL;
+    hracKrajina = NULL;
+    hracRok = NULL;
+    hracCount = 0;
+
+    riesGID = NULL;
+    riesPID = NULL;
+    riesSID = NULL;
+    riesDatum = NULL;
+    riesMin = NULL;
+    riesSek = NULL;
+    riesCount = 0;
+
+    srand((unsigned int)time(NULL));
 
     while (fgets(cmdLine, sizeof(cmdLine), stdin)) {
         trim(cmdLine);
@@ -780,10 +817,36 @@ int main(void) {
             if (fgets(sidInput, sizeof(sidInput), stdin)) {
                 h(&fSudoku, &fHracov, &fRieseni, sidInput);
             }
-        } else if (c == 'k') {
+        }else if (c == 'n') {
+            if (fSudoku == NULL || fHracov == NULL || fRieseni == NULL){
+                printf("N: Neotvoreny subor.\n");
+            } else {
+                n(fSudoku, fHracov, fRieseni, &sudokuSID, &sudokuSol, &sudokuCount, &hracPID, &hracMeno, &hracKrajina, &hracRok, &hracCount, &riesGID, &riesPID, &riesSID, &riesDatum, &riesMin, &riesSek, &riesCount, &polNaplnene);
+            }
+        } else if (c == 'q'){
+            q(&riesGID, &riesPID, &riesSID, &riesDatum, &riesMin, &riesSek, &riesCount, polNaplnene);
+        } else if (c == 'w'){
+            w(&riesGID, &riesPID, &riesSID, &riesDatum, &riesMin, &riesSek, &riesCount, polNaplnene);
+        } else if (c == 'e'){
+            e(sudokuSID, sudokuSol, sudokuCount, polNaplnene);
+        }else if (c == 'k') {
             if (fSudoku) fclose(fSudoku);
             if (fHracov) fclose(fHracov);
             if (fRieseni) fclose(fRieseni);
+            if (polNaplnene){
+                freeStringArray(sudokuSID, sudokuCount);
+                freeStringArray(sudokuSol, sudokuCount);
+                freeStringArray(hracPID, hracCount);
+                freeStringArray(hracMeno, hracCount);
+                freeStringArray(hracKrajina, hracCount);
+                freeStringArray(hracRok, hracCount);
+                freeStringArray(riesGID, riesCount);
+                freeStringArray(riesPID, riesCount);
+                freeStringArray(riesSID, riesCount);
+                freeStringArray(riesDatum, riesCount);
+                freeStringArray(riesMin, riesCount);
+                freeStringArray(riesSek, riesCount);
+            }
             break;
         }
         
