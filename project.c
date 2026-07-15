@@ -953,6 +953,80 @@ void m(FILE *fH, FILE *fR, Hrac **pZoznam, int *pZoznamNaplneny){
     return hracCount + riesCount;
 }
 
+void a(Hrac **pZoznam, int *pZoznamNaplneny){
+    int y;
+    char meno[100];
+    char krajina[100];
+    int rok;
+    Hrac *newNode;
+    Hrac *prev;
+    Hrac *check;
+    int pos;
+    int maxNum;
+    int num;
+    char newPID[10];
+
+    scanf("%d", &y);
+    while (getchar() != '\n') { }
+
+    if (fgets(meno, sizeof(meno), stdin) == NULL) meno[0] = '\0';
+    trim(meno);
+
+    if (fgets(krajina, sizeof(krajina), stdin) == NULL) krajina[0] = '\0';
+    trim(krajina);
+
+    scanf("%d", &rok);
+    while(getchar() != '\n') { }
+
+    check = *pZoznam;
+    while (check != NULL) {
+        if (strcmp(check->Identita, meno) == 0 && check->RokNar == rok){
+            printf("A: Duplicita zaznamu.\n");
+            return;
+        }
+        check = check->next;
+    }
+
+    maxNum = 0;
+    check = *pZoznam;
+    while (check != NULL) {
+        if (check->PID[3] == 'a'){
+            num = atoi(check->PID + 4);
+            if (num > maxNum) maxNum = num;
+        }
+        check = check->next;
+    }
+    sprintf(newPID, "PIDa%05d", maxNum + 1);
+
+    newNode = malloc(sizeof(Hrac));
+    strcpy(newNode->PID, newPID);
+    strncpy(newNode->Identita, meno, sizeof(newNode->Identita) - 1);
+    newNode->Identita[sizeof(newNode->Identita) - 1] = '\0';
+    strncpy(newNode->Krajina, krajina, sizeof(newNode->Krajina) - 1);
+    newNode->Krajina[sizeof(newNode->Krajina) - 1] = '\0';
+    newNode->RokNar = rok;
+    newNode->vysledky = NULL;
+    newNode->next = NULL;
+
+    if (*pZoznam == NULL || y <= 1){
+        newNode->next = *pZoznam;
+        *pZoznam = newNode;
+        pos = 1;
+    } else {
+        prev = *pZoznam;
+        pos = 1;
+        while(prev->next != NULL && pos < y - 1){
+            prev = prev->next;
+            pos++;
+        }
+        newNode->next = prev->next;
+        prev->next = newNode;
+        pos = pos + 1;
+    }
+    *pZoznamNaplneny = 1;
+
+    printf("A: Uspesne pridany zaznam na poziciu %d.\n", pos);
+}
 
 
 int main(void) {
